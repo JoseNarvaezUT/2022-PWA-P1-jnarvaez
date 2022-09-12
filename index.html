@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bootstrap demo</title>
+  </head>
+  <body>
+    <h1>Hello, world!</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Hablidades</th>
+          <th>Imagen</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <button onclick="prev()" >previou</button>
+    <button onclick="siguiente()">next</button>
+    <script >
+        let linkNext = '';
+        let lintPrev = '';
+        const siguiente= ()=>{
+            getListPokemon(linkNext)
+        }
+        const prev= ()=>{
+            getListPokemon(lintPrev)
+        }
+      const getListPokemon = async (link='https://pokeapi.co/api/v2/pokemon/') => {
+        console.log('Hola');
+        const tbody = document.getElementById('tbody');
+        tbody.innerHTML='';
+        const resp = await fetch(link);
+        const respJson = await resp.json();
+        console.log(respJson);
+        linkNext = respJson.next;
+        lintPrev = respJson.previous;
+        respJson.results.forEach(async (pokemon) => {
+          const pokemonX = await fetch(pokemon.url);
+          const pokemonXJson = await pokemonX.json();
+          let tr = document.createElement('tr')
+          pokemonXJson.abilities.forEach( (ability)=>{
+            console.log(ability.ability.name);
+          })
+          tr.innerHTML= ` <td>${pokemonXJson.name}</td>
+                <td>${pokemonXJson.abilities[0].ability.name}</td>
+                <td>
+                    <img src='${pokemonXJson.sprites.other['official-artwork'].front_default}'/>
+                    </td>`;
+          tbody.appendChild(tr);
+        });
+      };
+      getListPokemon()
+    </script>
+  </body>
+</html>
